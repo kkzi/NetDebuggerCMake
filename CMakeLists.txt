@@ -31,4 +31,5 @@ include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
 add_executable(${PROJECT_NAME} WIN32 ${SRCS})
+set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DPI_AWARE "ON")
 target_link_options(${PROJECT_NAME} PRIVATE "/entry:wWinMainCRTStartup")
