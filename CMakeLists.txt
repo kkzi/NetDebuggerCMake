@@ -1,0 +1,34 @@
+project(NetDebugger)
+cmake_minimum_required(VERSION 3.20)
+
+add_definitions(-D_AFXDLL -DUNICODE)
+include_directories(${CMAKE_SOURCE_DIR}/Code)
+file(GLOB_RECURSE SRCS Code/*.cpp Code/*.rc)
+
+find_package(BOOST REQUIRED)
+if (NOT ${BOOST_FOUND})
+    if (NOT ${BOOST_ROOT} OR ${BOOST_ROOT} STREQUAL "")
+        set(BOOST_ROOT $ENV{BOOST})
+    endif ()
+    find_package(BOOST REQUIRED)
+    if (WIN32)
+        math(EXPR BITSOF_VOID_P "${CMAKE_SIZEOF_VOID_P} * 8")
+        if (${MSVC_TOOLSET_VERSION} EQUAL 142)
+            set(Boost_LIBRARY_DIRS $ENV{BOOST}/lib${BITSOF_VOID_P}-msvc-14.2)
+        elseif (${MSVC_TOOLSET_VERSION} EQUAL 141)
+            set(Boost_LIBRARY_DIRS $ENV{BOOST}/lib${BITSOF_VOID_P}-msvc-14.1)
+        endif ()
+    endif ()
+
+endif()
+if (NOT ${Boost_FOUND})
+    message(FATAL_ERROR "NEED BOOST")
+endif()
+
+set(CMAKE_MFC_FLAG 2)
+
+include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
+
+add_executable(${PROJECT_NAME} WIN32 ${SRCS})
+target_link_options(${PROJECT_NAME} PRIVATE "/entry:wWinMainCRTStartup")
